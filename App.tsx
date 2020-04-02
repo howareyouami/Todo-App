@@ -12,6 +12,12 @@ import ConfigTask from './src/Containers/ConfigTask/ConfigTask';
 import { themes, Ithemes } from './src/constants/themes';
 import { ThemeContext } from './src/utils/themeContext';
 
+import firebaseApp from './firebase'
+import { Button } from 'react-native';
+
+const db = firebaseApp.firestore()
+
+
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
 
@@ -63,16 +69,27 @@ function root() {
 }
 
 export default function App() {
-  const [theme, setTheme] = useState(themes.light);
+
+  const testDb = () => {
+    db.collection("users").get().then((snapshot: any) => {
+      snapshot.docs.forEach((i: any) => {
+        console.log(i.data())
+      })
+    })
+
+    db.collection("users").add({
+      id: "user.user.uid",
+      name: "formValues.name",
+      email: "formValues.email",
+      followers: [],
+      following: [],
+      post: [{
+        content: "Hey, I joined TweetX",
+        time: Date.now()
+      }]
+    })
+  }
   return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
-      <NavigationContainer>
-        <Drawer.Navigator
-          drawerContent={props => CustomDrawerContent({ ...props, setTheme })}
-        >
-          <Drawer.Screen name="Home" component={root} />
-        </Drawer.Navigator>
-      </NavigationContainer>
-    </ThemeContext.Provider>
+    <Button style={{ margin: 40 }} onPress={() => testDb()} title="Test">Test</Button>
   );
 }
